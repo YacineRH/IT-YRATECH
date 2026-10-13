@@ -199,3 +199,12 @@ describe('entrainement entretien', () => {
     expect(inconnue.statusCode).toBe(404);
   });
 });
+
+describe('alertes d exemple', () => {
+  it('peuvent etre desactivees', async () => {
+    await chargerEnBase(db, await chargerContenu(config.contentDir), { alertesDemo: false });
+    expect((await get<VeilleDuJour>('/api/veille?heures=168')).corps.alertes).toEqual([]);
+    await chargerEnBase(db, await chargerContenu(config.contentDir));
+    expect((await get<VeilleDuJour>('/api/veille')).corps.alertes.length).toBeGreaterThan(0);
+  });
+});

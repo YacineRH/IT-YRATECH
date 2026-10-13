@@ -13,18 +13,22 @@ export interface BilanChargement {
  * Les fichiers font foi pour le contenu manuel : un contenu manuel absent
  * des fichiers est supprime. Le contenu genere (origine 'mcp') est conserve.
  */
-export async function chargerEnBase(db: Db, jeu: JeuDeContenu, maintenant = new Date()): Promise<BilanChargement> {
+export async function chargerEnBase(
+  db: Db,
+  jeu: JeuDeContenu,
+  { maintenant = new Date(), alertesDemo = true }: { maintenant?: Date; alertesDemo?: boolean } = {},
+): Promise<BilanChargement> {
   const client = await db.connect();
   try {
     await client.query('BEGIN');
     const idsDomaines = await chargerDomaines(client, jeu);
     await chargerContenus(client, jeu, idsDomaines);
-    await chargerAlertesDemo(client, jeu, idsDomaines, maintenant);
+    await chargerAlertesDemo(client, alertesDemo ? jeu.alertesDemo : [], idsDomaines, maintenant);
     await client.query('COMMIT');
     return {
       domaines: jeu.domaines.length,
       contenus: jeu.contenus.length,
-      alertesDemo: jeu.alertesDemo.length,
+      alertesDemo: alertesDemo ? jeu.alertesDemo.length : 0,
     };
   } catch (err) {
     await client.query('ROLLBACK');
@@ -97,13 +101,13 @@ async function chargerContenus(client: PoolClient, jeu: JeuDeContenu, ids: IdsDo
 
 async function chargerAlertesDemo(
   client: PoolClient,
-  jeu: JeuDeContenu,
+  alertes: JeuDeContenu['alertesDemo'],
   ids: IdsDomaines,
   maintenant: Date,
 ): Promise<void> {
   // Les alertes d'exemple sont recreees a chaque chargement, datees par rapport a maintenant.
   await client.query('DELETE FROM alerte WHERE demo');
-  for (const a of jeu.alertesDemo) {
+  for (const a of alertes) {
     const publieLe = new Date(maintenant.getTime() - a.minutesAvant * 60_000);
     await client.query(
       `INSERT INTO alerte (id, source, url, publie_le, titre, resume, criticite, reference, pourquoi, reflexe, exploitation_active, demo)

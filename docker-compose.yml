@@ -1,0 +1,47 @@
+# Deploiement IT-YRATECH sur le VPS (cahier des charges, section 13).
+# Usage : cp .env.example .env (puis renseigner POSTGRES_PASSWORD) && docker compose up -d --build
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: yratech
+      POSTGRES_USER: yratech
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?definir POSTGRES_PASSWORD dans .env}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U yratech -d yratech']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      target: api
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://yratech:${POSTGRES_PASSWORD}@db:5432/yratech
+      PORT: 3000
+      CORS_ORIGIN: ''
+      ALERTES_DEMO: ${ALERTES_DEMO:-true}
+    depends_on:
+      db:
+        condition: service_healthy
+
+  web:
+    build:
+      context: .
+      target: web
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      # Expose sur la boucle locale : le reverse proxy du VPS (TLS) relaie
+      # le sous-domaine (ex. veille.mondomaine.fr) vers ce port.
+      - '127.0.0.1:${WEB_PORT:-8080}:80'
+
+volumes:
+  db-data:

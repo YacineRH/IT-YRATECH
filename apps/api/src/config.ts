@@ -7,4 +7,8 @@ export const config = {
   corsOrigin: process.env.CORS_ORIGIN ?? 'http://localhost:5173',
   contentDir: process.env.CONTENT_DIR ?? fileURLToPath(new URL('../../../content', import.meta.url)),
   migrationsDir: fileURLToPath(new URL('../migrations', import.meta.url)),
+  /** Recharge content/ au demarrage (idempotent) : un deploiement suffit a publier le contenu. */
+  chargerContenu: process.env.CHARGER_CONTENU !== 'false',
+  /** Alertes d'exemple, a desactiver quand la veille reelle (phase 4) tourne. */
+  alertesDemo: process.env.ALERTES_DEMO !== 'false',
 };
