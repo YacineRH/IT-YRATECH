@@ -18,11 +18,11 @@ Point de reprise du projet, mis à jour à chaque étape. Roadmap : section 14 d
 
 - `npm run typecheck`, `npm test` (53 tests : moteur d'évaluation, API sur PostgreSQL réel, contrôle qualité du contenu, composants et formats du frontend), `npm run build`.
 - Les 3 écrans et les pages annexes rendus dans Chromium en 1440 px et 390 px, sans erreur console ni débordement horizontal.
+- CI GitHub Actions au vert : typage, tests sur PostgreSQL, build et construction des images Docker `api` et `web`.
 - Serveur compilé lancé avec la même disposition de fichiers que l'image Docker : migrations, chargement du contenu et API OK.
 
 ## Non vérifié
 
-- **Images Docker** : non construites dans l'environnement de développement (limite de téléchargement Docker Hub). Le job `images` de la CI les construit à chaque push.
 - **Déploiement sur le VPS** : rien n'est déployé. Le job `deployer` reste inactif tant que les secrets ne sont pas configurés (voir `DEPLOIEMENT.md`).
 
 ## Décisions à prendre
