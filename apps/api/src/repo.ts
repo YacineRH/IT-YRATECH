@@ -206,10 +206,11 @@ export async function rechercher(db: Db, q: string): Promise<ResultatRecherche> 
 
 /**
  * Tire une question au hasard, en privilegiant celles jamais reussies.
+ * Avec `id`, renvoie cette question precise (lien direct depuis une carte).
  */
 export async function tirerQuestion(
   db: Db,
-  f: { domaines?: string[]; exclure?: string[] },
+  f: { id?: string; domaines?: string[]; exclure?: string[] },
 ): Promise<QuestionEntrainement | null> {
   const { rows } = await db.query<QuestionEntrainement>(
     `SELECT c.id, c.titre, ${JSON_DOMAINE('d')} AS domaine, st.nom AS "sousTheme", c.difficulte
@@ -217,9 +218,10 @@ export async function tirerQuestion(
      WHERE c.type = 'question' AND c.statut = 'publie'
        AND (cardinality($1::text[]) = 0 OR d.slug = ANY($1))
        AND NOT (c.id = ANY($2))
+       AND ($3::text IS NULL OR c.id = $3)
      ORDER BY EXISTS (SELECT 1 FROM tentative t WHERE t.question_id = c.id AND t.verdict = 'reussie'), random()
      LIMIT 1`,
-    [f.domaines ?? [], f.exclure ?? []],
+    [f.domaines ?? [], f.exclure ?? [], f.id ?? null],
   );
   return rows[0] ?? null;
 }

@@ -1,0 +1,74 @@
+/*
+ * Tokens de design IT-YRATECH — « cockpit de veille » (cahier des charges, section 12).
+ * Fichier autonome, destine a etre partage avec le simulateur CCNA.
+ */
+:root {
+  /* Fonds */
+  --fond: #070b14;
+  --fond-barre: #0a101c;
+  --panneau: #0e1522;
+  --panneau-survol: #111a2a;
+  --panneau-actif: #13213a;
+  --creux: #0a101c;
+
+  /* Traits */
+  --trait: #1e2a3d;
+  --trait-fort: #2a3850;
+  --trait-doux: #172133;
+  --piste: #1a2436;
+
+  /* Texte */
+  --texte: #e6ecf5;
+  --texte-2: #c3ccda;
+  --texte-3: #b6c0d0;
+  --texte-attenue: #9aa6ba;
+  --texte-discret: #7d8aa1;
+
+  /* Domaines */
+  --dom-reseau: #22d3ee;
+  --dom-soc: #60a5fa;
+  --dom-grc: #34d399;
+  --dom-pentest: #ff6b4a;
+  --dom-ia: #b794f6;
+  --dom-metiers: #f0a8d0;
+  --dom-admin-sys: #a3b1c6;
+  --dom-web-cloud: #818cf8;
+  --dom-crypto: #d9b26f;
+
+  /* Criticite : couleur pleine, texte lisible, fond et bord de panneau */
+  --crit-critique: #ff4d5e;
+  --crit-critique-texte: #ff8a95;
+  --crit-critique-fond: #170c12;
+  --crit-critique-bord: #5a1e2a;
+  --crit-elevee: #ff8a3d;
+  --crit-elevee-texte: #ffb07a;
+  --crit-elevee-fond: #170f0a;
+  --crit-elevee-bord: #5a3418;
+  --crit-moyenne: #f2c94c;
+  --crit-moyenne-texte: #f2c94c;
+  --crit-moyenne-fond: #14130b;
+  --crit-moyenne-bord: #4a4218;
+  --crit-faible: #5b8def;
+  --crit-faible-texte: #8db0f5;
+  --crit-faible-fond: #0c1322;
+  --crit-faible-bord: #22355a;
+
+  /* Verdicts d'entrainement */
+  --ok: #34d399;
+  --ok-texte: #6ee7b7;
+  --partiel: #f2c94c;
+  --ko: #ff6b78;
+
+  /* Accent d'action */
+  --accent: #22d3ee;
+  --accent-encre: #04212a;
+
+  /* Typographie */
+  --police: 'IBM Plex Sans', system-ui, sans-serif;
+  --police-mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+  /* Formes */
+  --rayon-s: 6px;
+  --rayon: 8px;
+  --rayon-l: 12px;
+}

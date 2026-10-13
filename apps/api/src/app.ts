@@ -31,6 +31,7 @@ const FiltreVeille = z.object({
 });
 
 const FiltreQuestion = z.object({
+  id: SLUG.optional(),
   domaines: liste(SLUG),
   exclure: liste(SLUG),
 });
@@ -109,7 +110,7 @@ export async function construireApp({ db, corsOrigin, logger = false }: OptionsA
   app.get('/api/entrainement/question', async (req, reply) => {
     const f = lire(FiltreQuestion, req.query);
     return (
-      (await repo.tirerQuestion(db, { domaines: f.domaines, exclure: f.exclure })) ??
+      (await repo.tirerQuestion(db, { id: f.id, domaines: f.domaines, exclure: f.exclure })) ??
       reply.code(404).send(introuvable('Question'))
     );
   });

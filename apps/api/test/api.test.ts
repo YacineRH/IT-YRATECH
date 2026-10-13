@@ -143,6 +143,12 @@ describe('entrainement entretien', () => {
     expect(corps).not.toHaveProperty('corps');
   });
 
+  it('renvoie une question precise avec le nom de son sous-theme', async () => {
+    const { corps } = await get<QuestionEntrainement>('/api/entrainement/question?id=q-url-navigateur');
+    expect(corps).toMatchObject({ id: 'q-url-navigateur', sousTheme: 'Protocoles applicatifs' });
+    expect((await get('/api/entrainement/question?id=dns')).statut).toBe(404);
+  });
+
   it('respecte la liste d exclusion', async () => {
     const toutes = (await get<ContenuCarte[]>('/api/contenus?domaine=grc&type=question')).corps.map((c) => c.id);
     const garder = toutes[0]!;
