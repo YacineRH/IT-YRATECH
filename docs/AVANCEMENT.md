@@ -16,7 +16,7 @@ Point de reprise du projet, mis à jour à chaque étape. Roadmap : section 14 d
 
 ## Vérifié
 
-- `npm run typecheck`, `npm test` (46 tests : moteur d'évaluation, API sur PostgreSQL réel, contrôle qualité du contenu), `npm run build`.
+- `npm run typecheck`, `npm test` (53 tests : moteur d'évaluation, API sur PostgreSQL réel, contrôle qualité du contenu, composants et formats du frontend), `npm run build`.
 - Les 3 écrans et les pages annexes rendus dans Chromium en 1440 px et 390 px, sans erreur console ni débordement horizontal.
 - Serveur compilé lancé avec la même disposition de fichiers que l'image Docker : migrations, chargement du contenu et API OK.
 
