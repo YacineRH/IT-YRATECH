@@ -1,0 +1,21 @@
+{
+  "name": "it-yratech",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "build": "npm run build -w @yratech/shared && npm run build -w @yratech/api && npm run build -w @yratech/web",
+    "typecheck": "npm run build -w @yratech/shared && npm run typecheck --workspaces --if-present",
+    "test": "npm run build -w @yratech/shared && npm run test --workspaces --if-present",
+    "db:migrate": "npm run migrate -w @yratech/api",
+    "db:seed": "npm run seed -w @yratech/api",
+    "dev:api": "npm run dev -w @yratech/api",
+    "dev:web": "npm run dev -w @yratech/web"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
