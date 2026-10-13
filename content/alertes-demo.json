@@ -1,0 +1,82 @@
+[
+  {
+    "id": "demo-vpn-rce",
+    "source": "Exemple · avis de sécurité",
+    "minutesAvant": 92,
+    "titre": "Exécution de code à distance sur une passerelle VPN SSL très répandue",
+    "resume": "Une faille de pré-authentification permet à un attaquant non authentifié d'exécuter du code sur l'équipement. Des scans massifs et des compromissions sont rapportés ; un correctif est disponible.",
+    "criticite": "critique",
+    "exploitationActive": true,
+    "pourquoi": "Le VPN est la porte d'entrée du SI : compromis, il donne un accès direct au réseau interne — vecteur classique de ransomware.",
+    "reflexe": "Patcher, vérifier les journaux d'accès, réinitialiser les secrets exposés, segmenter derrière le VPN.",
+    "domaines": ["reseau", "pentest"],
+    "contenus": ["vpn-ipsec-tls", "ransomware-cycle", "zero-trust"]
+  },
+  {
+    "id": "demo-hyperviseur-auth",
+    "source": "Exemple · catalogue de vulnérabilités exploitées",
+    "minutesAvant": 179,
+    "titre": "Contournement d'authentification sur un hyperviseur largement déployé",
+    "resume": "La console d'administration accepte une session sans mot de passe dans certaines configurations. L'exploitation est confirmée par plusieurs éditeurs de sécurité.",
+    "criticite": "critique",
+    "exploitationActive": true,
+    "pourquoi": "Un hyperviseur compromis donne la main sur toutes les machines virtuelles qu'il héberge, sauvegardes comprises.",
+    "reflexe": "Isoler les interfaces d'administration dans un réseau dédié, appliquer le correctif, rechercher les sessions anormales.",
+    "domaines": ["admin-sys", "pentest"],
+    "contenus": ["mouvement-lateral"]
+  },
+  {
+    "id": "demo-ransomware-collectivites",
+    "source": "Exemple · rapport de menace",
+    "minutesAvant": 196,
+    "titre": "Nouvelle variante de ransomware à double extorsion visant les collectivités",
+    "resume": "Le groupe exfiltre les données avant chiffrement et menace de les publier. L'accès initial passe surtout par des comptes VPN sans MFA.",
+    "criticite": "elevee",
+    "pourquoi": "Les collectivités traitent des données personnelles sensibles : une fuite déclenche aussi des obligations RGPD.",
+    "reflexe": "Activer la MFA sur tous les accès distants, vérifier que les sauvegardes sont hors ligne et testées.",
+    "domaines": ["crypto", "soc"],
+    "contenus": ["ransomware-cycle", "violation-donnees"]
+  },
+  {
+    "id": "demo-phishing-rh",
+    "source": "Exemple · bulletin d'actualité",
+    "minutesAvant": 284,
+    "titre": "Campagne de phishing ciblant les services RH avec pièces jointes ISO",
+    "resume": "De fausses candidatures contiennent une image disque qui lance un chargeur de logiciel malveillant à l'ouverture.",
+    "criticite": "elevee",
+    "reflexe": "Bloquer les pièces jointes ISO et IMG au niveau de la messagerie, sensibiliser les équipes RH.",
+    "domaines": ["pentest"],
+    "contenus": ["phishing"]
+  },
+  {
+    "id": "demo-prompt-injection",
+    "source": "Exemple · publication de recherche",
+    "minutesAvant": 362,
+    "titre": "Injection de prompt indirecte dans des assistants connectés à la messagerie",
+    "resume": "Un e-mail piégé contient des instructions cachées qu'un assistant IA exécute en résumant la boîte de réception, jusqu'à exfiltrer des informations.",
+    "criticite": "moyenne",
+    "pourquoi": "Plus un assistant IA a d'accès et d'outils, plus une instruction cachée dans un contenu externe peut causer de dégâts.",
+    "domaines": ["ia"],
+    "contenus": []
+  },
+  {
+    "id": "demo-sanction-rgpd",
+    "source": "Exemple · décision d'autorité",
+    "minutesAvant": 870,
+    "titre": "Sanction RGPD pour défaut de sécurité sur des données de santé",
+    "resume": "L'autorité relève des mots de passe faibles, l'absence de journalisation et des données conservées au-delà de la durée nécessaire.",
+    "criticite": "moyenne",
+    "domaines": ["grc"],
+    "contenus": ["rgpd", "violation-donnees"]
+  },
+  {
+    "id": "demo-guide-dns",
+    "source": "Exemple · guide de bonnes pratiques",
+    "minutesAvant": 1010,
+    "titre": "Publication d'un guide de durcissement des résolveurs DNS",
+    "resume": "Le guide recommande la validation DNSSEC, la limitation des requêtes récursives aux clients internes et la journalisation des requêtes.",
+    "criticite": "faible",
+    "domaines": ["reseau"],
+    "contenus": ["dns", "dns-spoofing"]
+  }
+]

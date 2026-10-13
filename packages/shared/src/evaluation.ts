@@ -29,9 +29,12 @@ export function normaliser(texte: string): string {
 }
 
 function contient(texteNormalise: string, motCle: string): boolean {
-  // Ancre en debut de mot : "tls" ne valide pas "atlas", mais
-  // "certificat" valide "certificats".
-  return texteNormalise.includes(normaliser(motCle).trimEnd());
+  const cle = normaliser(motCle);
+  // Mot court (sigle) : mot entier, sinon "mac" validerait "machine".
+  if (cle.trim().length <= 3) return texteNormalise.includes(cle);
+  // Sinon ancre en debut de mot seulement : "certificat" valide
+  // "certificats", mais "tls" ne valide jamais "atlas".
+  return texteNormalise.includes(cle.trimEnd());
 }
 
 export const SEUIL_REUSSITE = 0.8;

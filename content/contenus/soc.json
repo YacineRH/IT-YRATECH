@@ -1,0 +1,311 @@
+[
+  {
+    "id": "organisation-soc",
+    "type": "fiche",
+    "domaine": "soc",
+    "sousTheme": "organisation",
+    "titre": "Organisation d'un SOC : N1, N2, N3 et CSIRT",
+    "resume": "Qui fait quoi dans un centre opérationnel de sécurité, et comment une alerte circule.",
+    "difficulte": "fondamental",
+    "corps": {
+      "definition": "Un SOC surveille le SI en continu pour détecter et traiter les incidents. Le niveau 1 trie les alertes et écarte les faux positifs, le niveau 2 investigue en profondeur, le niveau 3 mène la chasse aux menaces (threat hunting) et la réponse aux incidents majeurs, avec le CERT/CSIRT pour la coordination et la remédiation.",
+      "schema": "N1 triage ──escalade──→ N2 investigation ──escalade──→ N3 hunting / réponse\n                                                 └──→ CERT / CSIRT",
+      "casUsage": "Une alerte de connexion suspecte est qualifiée par le N1 en quelques minutes, escaladée au N2 si elle est confirmée, qui isole le poste et rédige le rapport d'incident.",
+      "piege": "Décrire le N1 comme un poste de « clics » : on attend de lui un jugement rapide et documenté, et une escalade argumentée.",
+      "pointsCles": [
+        "N1 triage, N2 investigation, N3 hunting et réponse",
+        "CERT/CSIRT pour la coordination des incidents",
+        "Chaque escalade est documentée",
+        "Fonctionnement 24/7 avec procédures écrites"
+      ]
+    },
+    "liens": [
+      { "cible": "cycle-alerte", "nature": "voir-aussi" },
+      { "cible": "indicateurs-soc", "nature": "voir-aussi" }
+    ]
+  },
+  {
+    "id": "cycle-alerte",
+    "type": "fiche",
+    "domaine": "soc",
+    "sousTheme": "organisation",
+    "titre": "Cycle de vie d'une alerte",
+    "resume": "Collecte, corrélation, triage, qualification, escalade, remédiation.",
+    "difficulte": "fondamental",
+    "corps": {
+      "definition": "Une alerte naît de la collecte des journaux, qui sont corrélés par le SIEM selon des règles. L'analyste la trie, la qualifie (vrai ou faux positif, gravité, périmètre), l'escalade si nécessaire, puis l'incident est remédié et clôturé avec un retour d'expérience.",
+      "schema": "collecte → corrélation → triage → qualification → escalade → remédiation → retour d'expérience",
+      "casUsage": "Un pic d'échecs d'authentification sur un compte de service déclenche une règle ; l'analyste vérifie la source, l'heure et les succès éventuels avant de qualifier une attaque par force brute.",
+      "piege": "Oublier la boucle de retour : chaque faux positif doit nourrir le tuning des règles, chaque incident l'amélioration de la détection.",
+      "pointsCles": [
+        "Collecte puis corrélation par le SIEM",
+        "Triage et qualification par l'analyste",
+        "Escalade selon la gravité",
+        "Remédiation et retour d'expérience"
+      ]
+    },
+    "liens": [{ "cible": "siem", "nature": "outil" }]
+  },
+  {
+    "id": "indicateurs-soc",
+    "type": "fiche",
+    "domaine": "soc",
+    "sousTheme": "organisation",
+    "titre": "Indicateurs clés : MTTD, MTTR, faux positifs",
+    "resume": "Mesurer la performance d'un SOC : délais de détection, de réponse et qualité des règles.",
+    "difficulte": "intermediaire",
+    "corps": {
+      "definition": "Le MTTD (Mean Time To Detect) mesure le délai moyen entre le début d'un incident et sa détection. Le MTTR (Mean Time To Respond) mesure le délai moyen pour le contenir et le résoudre. Le taux de faux positifs mesure la part d'alertes injustifiées, qui épuisent les analystes.",
+      "casUsage": "Un MTTD qui baisse après l'ajout de règles comportementales montre l'efficacité de la détection ; un taux de faux positifs élevé justifie une campagne de tuning.",
+      "piege": "Optimiser un seul indicateur : réduire les faux positifs en désactivant des règles fait grimper les faux négatifs, invisibles mais bien plus graves.",
+      "pointsCles": [
+        "MTTD : délai de détection",
+        "MTTR : délai de réponse",
+        "Faux positifs et fatigue des analystes",
+        "Les indicateurs s'équilibrent entre eux"
+      ]
+    },
+    "liens": [{ "cible": "regles-detection", "nature": "voir-aussi" }]
+  },
+  {
+    "id": "siem",
+    "type": "outil",
+    "domaine": "soc",
+    "sousTheme": "outils",
+    "titre": "SIEM (Splunk, QRadar, Sentinel, Wazuh)",
+    "resume": "Collecte, normalisation et corrélation des journaux pour générer des alertes.",
+    "difficulte": "fondamental",
+    "corps": {
+      "categorie": "Détection",
+      "role": "Centraliser les journaux de tout le SI (pare-feu, AD, serveurs, EDR), les normaliser et appliquer des règles de corrélation pour lever des alertes et conserver une piste d'audit.",
+      "exemple": "Règle : plus de 20 échecs de connexion pour un même compte en 5 minutes suivis d'un succès → alerte « force brute réussie ».",
+      "alternatives": ["Splunk", "IBM QRadar", "Microsoft Sentinel", "Wazuh", "Elastic Security"]
+    },
+    "liens": [{ "cible": "regles-detection", "nature": "voir-aussi" }]
+  },
+  {
+    "id": "edr-xdr",
+    "type": "fiche",
+    "domaine": "soc",
+    "sousTheme": "outils",
+    "titre": "EDR / XDR vs antivirus",
+    "resume": "Détection comportementale sur les postes, investigation et isolation d'un poste compromis.",
+    "difficulte": "intermediaire",
+    "corps": {
+      "definition": "Un antivirus classique compare les fichiers à des signatures connues. Un EDR (Endpoint Detection and Response) enregistre en continu l'activité des postes (processus, connexions, modifications) pour détecter des comportements suspects, investiguer et réagir à distance. Un XDR étend cette corrélation au réseau, à la messagerie et au cloud.",
+      "casUsage": "Un document Word lance PowerShell avec une commande encodée qui contacte Internet : l'EDR bloque la chaîne, isole le poste du réseau et fournit l'arbre des processus à l'analyste.",
+      "piege": "Dire que l'EDR « remplace » l'antivirus : il l'intègre et ajoute la télémétrie et la réponse. Sans analystes pour exploiter ses alertes, sa valeur chute.",
+      "pointsCles": [
+        "Signatures (antivirus) vs comportement (EDR)",
+        "Télémétrie continue et investigation",
+        "Isolation réseau d'un poste compromis",
+        "XDR : corrélation multi-sources"
+      ]
+    },
+    "liens": [{ "cible": "regles-detection", "nature": "voir-aussi" }]
+  },
+  {
+    "id": "mitre-attack",
+    "type": "fiche",
+    "domaine": "soc",
+    "sousTheme": "outils",
+    "titre": "MITRE ATT&CK",
+    "resume": "Référentiel des tactiques et techniques des attaquants, langage commun de la détection.",
+    "difficulte": "intermediaire",
+    "corps": {
+      "definition": "MITRE ATT&CK est une base de connaissances publique qui décrit le comportement des attaquants : des tactiques (l'objectif : accès initial, persistance, mouvement latéral, exfiltration…) déclinées en techniques et sous-techniques identifiées (ex. T1059 pour l'exécution via un interpréteur de commandes), documentées à partir d'attaques réelles.",
+      "schema": "Tactique (pourquoi)   → Technique (comment)          → Détection / mitigation\nExécution             → T1059.001 PowerShell          → journaux 4104, règle SIEM\nMouvement latéral     → T1021.001 RDP                 → connexions RDP inhabituelles",
+      "casUsage": "Cartographier les règles du SOC sur la matrice pour voir quelles techniques ne sont pas couvertes, ou décrire un incident dans un rapport avec un vocabulaire partagé.",
+      "piege": "Présenter ATT&CK comme une liste de contrôle à cocher à 100 % : c'est un outil de priorisation, à confronter aux menaces réellement pertinentes pour l'organisation.",
+      "pointsCles": [
+        "Tactiques = objectifs, techniques = moyens",
+        "Basé sur des observations réelles",
+        "Mesure de la couverture de détection",
+        "Vocabulaire commun SOC, CTI et Red Team"
+      ]
+    },
+    "liens": [{ "cible": "mouvement-lateral", "nature": "voir-aussi" }]
+  },
+  {
+    "id": "regles-detection",
+    "type": "fiche",
+    "domaine": "soc",
+    "sousTheme": "detection",
+    "titre": "Écrire une règle de détection",
+    "resume": "Condition, seuil, fenêtre temporelle, action ; faux positifs et tuning.",
+    "difficulte": "intermediaire",
+    "corps": {
+      "definition": "Une règle de détection combine une condition sur des événements, un seuil, une fenêtre temporelle et une action (alerte, ticket, réponse automatique). Elle est ensuite ajustée (tuning) pour réduire les faux positifs sans créer de faux négatifs.",
+      "schema": "SI    événement = échec d'authentification\nET    même compte, >= 20 occurrences\nDANS  une fenêtre de 5 minutes\nALORS alerte de gravité haute + ticket N1",
+      "casUsage": "Règles classiques : connexion à un horaire inhabituel, force brute, volume sortant anormal (exfiltration), PowerShell lancé avec un argument encodé (-EncodedCommand).",
+      "piege": "Confondre faux positif (alerte sans attaque) et faux négatif (attaque sans alerte). Le second est le plus dangereux car invisible.",
+      "pointsCles": [
+        "Condition, seuil, fenêtre, action",
+        "Faux positif vs faux négatif",
+        "Tuning à partir des cas réels",
+        "Exemples : force brute, horaire, exfiltration, PowerShell encodé"
+      ]
+    },
+    "liens": [
+      { "cible": "siem", "nature": "outil" },
+      { "cible": "mitre-attack", "nature": "voir-aussi" }
+    ]
+  },
+  {
+    "id": "ids-ips",
+    "type": "fiche",
+    "domaine": "soc",
+    "sousTheme": "detection",
+    "titre": "IDS vs IPS",
+    "resume": "Détecter en observant une copie du trafic, ou bloquer en coupure.",
+    "difficulte": "fondamental",
+    "corps": {
+      "definition": "Un IDS (Intrusion Detection System) analyse une copie du trafic, par exemple via un port miroir, et lève des alertes sans bloquer. Un IPS (Intrusion Prevention System) est placé en coupure sur le flux et peut bloquer les paquets malveillants en temps réel. Les deux s'appuient sur des signatures et sur la détection d'anomalies.",
+      "schema": "IDS : trafic ──→ switch ──→ serveur\n                   └─(miroir)→ IDS → alerte\nIPS : trafic ──→ IPS ──→ serveur   (peut bloquer)",
+      "casUsage": "Un IPS en entrée du réseau bloque l'exploitation d'une vulnérabilité connue en attendant le correctif (patch virtuel). Un IDS interne surveille les flux entre zones sans risque de couper la production.",
+      "piege": "Oublier le revers de l'IPS : un faux positif bloque du trafic légitime, et une panne de l'équipement en coupure peut interrompre le service.",
+      "pointsCles": [
+        "IDS passif (copie du trafic), IPS en coupure",
+        "Alerte vs blocage",
+        "Signatures et anomalies",
+        "Faux positifs plus coûteux sur un IPS"
+      ]
+    },
+    "liens": [{ "cible": "firewall-stateful", "nature": "voir-aussi" }]
+  },
+  {
+    "id": "mouvement-lateral",
+    "type": "fiche",
+    "domaine": "soc",
+    "sousTheme": "menaces",
+    "titre": "APT, mouvement latéral et escalade de privilèges",
+    "resume": "Comment un attaquant progresse dans le SI après l'accès initial, et comment le repérer.",
+    "difficulte": "avance",
+    "corps": {
+      "definition": "Une APT (Advanced Persistent Threat) est un attaquant organisé qui cherche à rester longtemps dans le SI. Après l'accès initial, il installe une persistance, élève ses privilèges (exploitation, vol d'identifiants), se déplace latéralement de machine en machine (RDP, SMB, PsExec, pass-the-hash) jusqu'à ses cibles, puis exfiltre des données.",
+      "schema": "accès initial → persistance → escalade de privilèges → mouvement latéral → exfiltration / impact",
+      "casUsage": "Repérer un compte utilisateur qui ouvre des sessions administratives sur des dizaines de serveurs en une heure, ou un poste de travail qui se connecte en SMB à d'autres postes.",
+      "piege": "Se concentrer uniquement sur l'accès initial. La plupart des détections efficaces portent sur les étapes suivantes, plus bruyantes.",
+      "pointsCles": [
+        "Persistance, escalade, mouvement latéral, exfiltration",
+        "Vol et réutilisation d'identifiants",
+        "Segmentation et comptes à privilèges protégés",
+        "Détection sur les comportements anormaux entre machines"
+      ]
+    },
+    "liens": [
+      { "cible": "zero-trust", "nature": "voir-aussi" },
+      { "cible": "ransomware-cycle", "nature": "voir-aussi" }
+    ]
+  },
+  {
+    "id": "q-alerte-3h",
+    "type": "question",
+    "domaine": "soc",
+    "sousTheme": "organisation",
+    "titre": "Que ferais-tu en recevant une alerte de connexion suspecte à 3 h du matin ?",
+    "resume": "Démarche de triage et de qualification d'une alerte.",
+    "difficulte": "intermediaire",
+    "corps": {
+      "reference": [
+        { "titre": "Contexte", "detail": "Identifier le compte, la machine, l'adresse source et sa géolocalisation, le type de connexion (VPN, RDP, cloud)." },
+        { "titre": "Comparer", "detail": "Comparer aux habitudes : astreinte, déplacement, compte de service, horaires habituels." },
+        { "titre": "Corréler", "detail": "Rechercher d'autres signaux : échecs préalables, MFA refusé, activité après connexion, autres comptes depuis la même IP." },
+        { "titre": "Décider", "detail": "Qualifier vrai ou faux positif ; si suspect, escalader et contenir (désactiver le compte, révoquer les sessions, isoler le poste)." },
+        { "titre": "Documenter", "detail": "Tracer chaque vérification et décision dans le ticket." }
+      ],
+      "pointsCles": [
+        { "libelle": "Identifier le compte, la source et le contexte", "motsCles": ["compte", "utilisateur", "source", "adresse ip", "geoloc", "provenance"] },
+        { "libelle": "Comparer aux habitudes (astreinte, déplacement)", "motsCles": ["habitude", "astreinte", "deplacement", "normal", "inhabituel"] },
+        { "libelle": "Corréler avec d'autres événements", "motsCles": ["correl", "autres evenements", "journaux", "logs", "siem", "historique"] },
+        { "libelle": "Contenir si nécessaire (compte, sessions, poste)", "motsCles": ["desactiv", "bloqu", "isol", "revoq", "reinitialis"] },
+        { "libelle": "Escalader selon la procédure", "motsCles": ["escalad", "n2", "procedure"] },
+        { "libelle": "Documenter dans le ticket", "motsCles": ["document", "ticket", "trace", "rapport"], "secondaire": true }
+      ],
+      "piege": "Bloquer immédiatement le compte sans vérification, ou à l'inverse attendre le matin. On attend une démarche structurée, rapide et documentée.",
+      "relances": ["Et si le compte appartient au directeur général en déplacement ?"]
+    },
+    "liens": [{ "cible": "cycle-alerte", "nature": "prerequis" }]
+  },
+  {
+    "id": "q-ids-ips",
+    "type": "question",
+    "domaine": "soc",
+    "sousTheme": "detection",
+    "titre": "Différencie un IDS et un IPS.",
+    "resume": "Détection passive contre prévention en coupure.",
+    "difficulte": "fondamental",
+    "corps": {
+      "reference": [
+        { "titre": "IDS", "detail": "Analyse une copie du trafic et alerte, sans bloquer." },
+        { "titre": "IPS", "detail": "Placé en coupure, il peut bloquer le trafic malveillant en temps réel." },
+        { "titre": "Compromis", "detail": "L'IPS protège activement mais un faux positif ou une panne impacte la production." }
+      ],
+      "pointsCles": [
+        { "libelle": "IDS : détecte et alerte", "motsCles": ["detect", "alert"] },
+        { "libelle": "IPS : bloque / prévient", "motsCles": ["bloqu", "prevent", "empech", "coupe"] },
+        { "libelle": "Positionnement : copie du trafic vs en coupure", "motsCles": ["copie", "miroir", "span", "coupure", "inline", "en ligne", "passif"] },
+        { "libelle": "Risque des faux positifs sur un IPS", "motsCles": ["faux positif", "legitime", "production"], "secondaire": true }
+      ],
+      "piege": "Répondre seulement « l'un détecte, l'autre bloque » sans parler du positionnement ni des risques de l'IPS.",
+      "relances": ["Où placerais-tu un IPS dans une architecture avec DMZ ?"]
+    },
+    "liens": [{ "cible": "ids-ips", "nature": "prerequis" }]
+  },
+  {
+    "id": "q-prioriser-alertes",
+    "type": "question",
+    "domaine": "soc",
+    "sousTheme": "organisation",
+    "titre": "Comment prioriser des alertes quand il y en a des centaines ?",
+    "resume": "Criticité, actifs touchés, corrélation et automatisation.",
+    "difficulte": "intermediaire",
+    "corps": {
+      "reference": [
+        { "titre": "Gravité", "detail": "Partir de la sévérité de la règle et du niveau de confiance." },
+        { "titre": "Actifs", "detail": "Pondérer par la criticité de l'actif ou du compte (contrôleur de domaine, administrateur, données sensibles)." },
+        { "titre": "Regrouper", "detail": "Corréler les alertes liées en un seul incident pour traiter la cause, pas les symptômes." },
+        { "titre": "Automatiser", "detail": "Enrichissement et réponses automatiques (SOAR) pour les cas répétitifs, tuning des règles bruyantes." }
+      ],
+      "pointsCles": [
+        { "libelle": "Sévérité et niveau de confiance", "motsCles": ["severite", "gravite", "criticite", "confiance", "score"] },
+        { "libelle": "Criticité des actifs et comptes concernés", "motsCles": ["actif", "serveur critique", "administrateur", "admin", "sensible", "impact"] },
+        { "libelle": "Regrouper / corréler les alertes", "motsCles": ["regroup", "correl", "agreg", "incident"] },
+        { "libelle": "Automatiser (SOAR, enrichissement)", "motsCles": ["automat", "soar", "playbook", "enrichi"] },
+        { "libelle": "Tuning des règles bruyantes", "motsCles": ["tuning", "ajust", "faux positif", "bruit"], "secondaire": true }
+      ],
+      "piege": "Répondre « par ordre d'arrivée ». On attend une priorisation par le risque et des actions pour réduire le volume.",
+      "relances": ["Quelle alerte traites-tu en premier entre un antivirus sur un poste et une connexion admin inhabituelle sur un contrôleur de domaine ?"]
+    },
+    "liens": [
+      { "cible": "indicateurs-soc", "nature": "voir-aussi" },
+      { "cible": "regles-detection", "nature": "voir-aussi" }
+    ]
+  },
+  {
+    "id": "q-mitre-attack",
+    "type": "question",
+    "domaine": "soc",
+    "sousTheme": "outils",
+    "titre": "Explique le framework MITRE ATT&CK et son utilité.",
+    "resume": "Tactiques, techniques et usages concrets pour un SOC.",
+    "difficulte": "intermediaire",
+    "corps": {
+      "reference": [
+        { "titre": "Définition", "detail": "Base de connaissances publique des comportements d'attaquants, construite à partir d'attaques réelles." },
+        { "titre": "Structure", "detail": "Tactiques (objectifs) et techniques/sous-techniques (moyens), avec des identifiants comme T1059." },
+        { "titre": "Usages", "detail": "Mesurer la couverture de détection, prioriser les règles, décrire les incidents, construire des exercices Red Team." }
+      ],
+      "pointsCles": [
+        { "libelle": "Référentiel des comportements d'attaquants", "motsCles": ["referentiel", "base de connaissance", "attaquant", "comportement", "matrice"] },
+        { "libelle": "Tactiques (objectifs)", "motsCles": ["tactique"] },
+        { "libelle": "Techniques et sous-techniques", "motsCles": ["technique"] },
+        { "libelle": "Usage : couverture de détection", "motsCles": ["couverture", "detection", "regle", "cartograph"] },
+        { "libelle": "Vocabulaire commun (rapports, Red Team)", "motsCles": ["commun", "rapport", "red team", "langage"], "secondaire": true }
+      ],
+      "piege": "Confondre ATT&CK avec une méthode de gestion des risques ou une norme de conformité.",
+      "relances": ["Cite une technique ATT&CK que tu saurais détecter, et comment."]
+    },
+    "liens": [{ "cible": "mitre-attack", "nature": "prerequis" }]
+  }
+]

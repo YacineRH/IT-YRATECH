@@ -1,0 +1,539 @@
+[
+  {
+    "id": "osi-tcpip",
+    "type": "fiche",
+    "domaine": "reseau",
+    "sousTheme": "modeles",
+    "titre": "Modèle OSI vs TCP/IP",
+    "resume": "Les 7 couches OSI, les 4 couches TCP/IP, le rôle de chacune et des exemples de protocoles.",
+    "difficulte": "fondamental",
+    "corps": {
+      "definition": "Le modèle OSI découpe une communication réseau en 7 couches de responsabilité (physique, liaison, réseau, transport, session, présentation, application). Le modèle TCP/IP, celui réellement implémenté sur Internet, les regroupe en 4 couches (accès réseau, Internet, transport, application).",
+      "schema": "OSI                     TCP/IP          Exemples\n7 Application   ┐\n6 Présentation  ├──────  Application     HTTP, DNS, SSH, SMTP\n5 Session       ┘\n4 Transport     ───────  Transport       TCP, UDP\n3 Réseau        ───────  Internet        IP, ICMP\n2 Liaison       ┐\n1 Physique      ┴──────  Accès réseau    Ethernet, Wi-Fi, ARP",
+      "casUsage": "Diagnostiquer une panne couche par couche : le câble est-il branché (1), la carte voit-elle le switch (2), l'IP est-elle joignable (3), le port répond-il (4), l'application renvoie-t-elle une erreur (7) ?",
+      "piege": "Réciter les 7 couches sans savoir à quoi elles servent. En entretien, on attend un protocole et un équipement par couche (switch en couche 2, routeur en couche 3, firewall applicatif en couche 7).",
+      "pointsCles": [
+        "OSI est un modèle de référence, TCP/IP est le modèle implémenté",
+        "Encapsulation : chaque couche ajoute son en-tête (trame, paquet, segment)",
+        "Switch = couche 2 (adresses MAC), routeur = couche 3 (adresses IP)",
+        "ARP fait le lien entre les couches 2 et 3"
+      ]
+    },
+    "liens": [{ "cible": "tcp-vs-udp", "nature": "voir-aussi" }]
+  },
+  {
+    "id": "tcp-vs-udp",
+    "type": "fiche",
+    "domaine": "reseau",
+    "sousTheme": "transport",
+    "titre": "TCP vs UDP",
+    "resume": "Connexion fiable et ordonnée contre envoi léger sans garantie : fonctionnement et cas d'usage.",
+    "difficulte": "fondamental",
+    "corps": {
+      "definition": "TCP est un protocole de transport orienté connexion : il établit une session (three-way handshake), numérote les octets, accuse réception, retransmet les pertes et régule le débit (fenêtre glissante). UDP envoie des datagrammes indépendants sans connexion, sans accusé de réception ni retransmission.",
+      "schema": "TCP : SYN → SYN-ACK → ACK → données (seq/ack) → FIN\nUDP : datagramme → datagramme → datagramme (aucun état)",
+      "casUsage": "TCP pour HTTP(S), SSH, SMTP, transferts de fichiers : tout ce qui doit arriver complet et dans l'ordre. UDP pour DNS, VoIP, streaming, jeux en ligne, DHCP : la latence compte plus qu'une perte ponctuelle.",
+      "piege": "Dire qu'UDP est « non sécurisé ». Il est non fiable (pas de garantie de livraison), ce qui n'a rien à voir avec la sécurité. DNS utilise aussi TCP pour les grosses réponses et les transferts de zone.",
+      "pointsCles": [
+        "TCP : connexion, ordre, accusés de réception, retransmission",
+        "UDP : pas de connexion, faible latence, en-tête de 8 octets",
+        "Fenêtre glissante TCP = contrôle de flux",
+        "Le choix dépend du besoin : fiabilité ou rapidité"
+      ]
+    },
+    "liens": [
+      { "cible": "tcp-handshake", "nature": "voir-aussi" },
+      { "cible": "dns", "nature": "voir-aussi" }
+    ]
+  },
+  {
+    "id": "tcp-handshake",
+    "type": "fiche",
+    "domaine": "reseau",
+    "sousTheme": "transport",
+    "titre": "Three-way handshake TCP",
+    "resume": "SYN, SYN-ACK, ACK : comment TCP synchronise les numéros de séquence avant d'échanger des données.",
+    "difficulte": "fondamental",
+    "corps": {
+      "definition": "Avant tout échange, TCP synchronise les deux extrémités en trois segments : le client envoie SYN avec son numéro de séquence initial, le serveur répond SYN-ACK avec le sien et acquitte celui du client, le client acquitte par ACK. La connexion est alors établie dans les deux sens.",
+      "schema": "Client                     Serveur\n  │ ── SYN (seq=x) ─────────→ │\n  │ ←── SYN-ACK (seq=y, ack=x+1) │\n  │ ── ACK (ack=y+1) ────────→ │\n  │      connexion établie     │",
+      "casUsage": "Lire une capture Wireshark : un SYN sans réponse indique un port filtré, un RST un port fermé. Nmap exploite ce comportement pour scanner (scan SYN « demi-ouvert »).",
+      "piege": "Oublier que les numéros de séquence initiaux sont aléatoires et qu'ils protègent contre l'injection de segments. Ne pas faire le lien avec l'attaque SYN flood, qui sature la file des connexions à moitié ouvertes.",
+      "pointsCles": [
+        "SYN, SYN-ACK, ACK",
+        "Échange des numéros de séquence initiaux",
+        "SYN flood = épuisement des connexions semi-ouvertes (contre-mesure : SYN cookies)",
+        "Fermeture par FIN/ACK ou RST"
+      ]
+    },
+    "liens": [{ "cible": "regles-detection", "nature": "voir-aussi" }]
+  },
+  {
+    "id": "adressage-ip",
+    "type": "fiche",
+    "domaine": "reseau",
+    "sousTheme": "adressage",
+    "titre": "Adressage IP, subnetting et VLSM",
+    "resume": "Notation CIDR, calcul de sous-réseaux, plages privées et découpage à masque variable.",
+    "difficulte": "fondamental",
+    "corps": {
+      "definition": "Une adresse IPv4 fait 32 bits, séparés par le masque en une partie réseau et une partie hôte. La notation CIDR (/24) indique la longueur de la partie réseau. Le subnetting découpe un réseau en sous-réseaux ; le VLSM utilise des masques de tailles différentes pour ajuster chaque sous-réseau à son besoin.",
+      "schema": "192.168.10.0/26\n  masque      255.255.255.192\n  hôtes       2^(32-26) - 2 = 62\n  plage       192.168.10.1 → .62\n  broadcast   192.168.10.63",
+      "casUsage": "Découper un /24 pour un site : un /26 pour les postes (62 hôtes), un /27 pour les serveurs (30), un /30 pour le lien vers le routeur (2).",
+      "piege": "Oublier de retirer l'adresse réseau et l'adresse de broadcast du nombre d'hôtes utilisables, ou confondre les plages privées RFC 1918 : 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16.",
+      "pointsCles": [
+        "Hôtes utilisables = 2^(bits hôte) - 2",
+        "Plages privées RFC 1918",
+        "VLSM = masques de longueur variable",
+        "Adresse réseau et broadcast non attribuables"
+      ]
+    },
+    "liens": [{ "cible": "nat-pat", "nature": "voir-aussi" }]
+  },
+  {
+    "id": "nat-pat",
+    "type": "fiche",
+    "domaine": "reseau",
+    "sousTheme": "adressage",
+    "titre": "NAT et PAT",
+    "resume": "Traduire des adresses privées en adresse publique, et partager une IP grâce aux ports.",
+    "difficulte": "fondamental",
+    "corps": {
+      "definition": "Le NAT (Network Address Translation) réécrit les adresses IP à la frontière d'un réseau. Le PAT (ou NAT overload) fait partager une seule adresse publique à de nombreux postes privés en distinguant les flux par le port source, mémorisé dans une table de traduction.",
+      "schema": "192.168.1.10:51000 ─┐                     ┌→ 93.184.216.34:443\n192.168.1.11:51000 ─┴→ [routeur PAT] 203.0.113.5:40001 / :40002",
+      "casUsage": "Une box internet : tous les appareils de la maison sortent avec la même IP publique. En entreprise, le NAT statique publie un serveur interne sur une IP publique dédiée.",
+      "piege": "Présenter le NAT comme un mécanisme de sécurité. Il masque l'adressage interne et bloque de fait les connexions entrantes non sollicitées, mais ne remplace pas un pare-feu.",
+      "pointsCles": [
+        "NAT statique, dynamique, PAT",
+        "Table de traduction (IP, port)",
+        "Répond à la pénurie d'adresses IPv4",
+        "Pas un pare-feu"
+      ]
+    },
+    "liens": [{ "cible": "firewall-stateful", "nature": "voir-aussi" }]
+  },
+  {
+    "id": "ipv6",
+    "type": "fiche",
+    "domaine": "reseau",
+    "sousTheme": "adressage",
+    "titre": "IPv6 : différences clés avec IPv4",
+    "resume": "Adresses sur 128 bits, autoconfiguration, disparition du broadcast et nouveaux enjeux de sécurité.",
+    "difficulte": "intermediaire",
+    "corps": {
+      "definition": "IPv6 utilise des adresses de 128 bits notées en hexadécimal. Il supprime le broadcast au profit du multicast, remplace ARP par NDP (Neighbor Discovery Protocol) et permet l'autoconfiguration des adresses (SLAAC). Le NAT n'y est plus nécessaire.",
+      "schema": "2001:0db8:0000:0000:0000:ff00:0042:8329\n= 2001:db8::ff00:42:8329  (zéros de tête et :: une seule fois)",
+      "casUsage": "Un poste Windows active IPv6 par défaut : même dans un réseau « IPv4 only », il peut accepter des annonces de routeur et ouvrir un chemin non surveillé.",
+      "piege": "Croire qu'un réseau sans IPv6 configuré n'est pas exposé. Les annonces de routeur malveillantes (rogue RA) permettent une interception si le RA Guard n'est pas activé.",
+      "pointsCles": [
+        "128 bits, notation hexadécimale abrégée",
+        "NDP remplace ARP, multicast remplace broadcast",
+        "SLAAC : autoconfiguration",
+        "Surveiller IPv6 même s'il n'est pas utilisé"
+      ]
+    },
+    "liens": [{ "cible": "adressage-ip", "nature": "prerequis" }]
+  },
+  {
+    "id": "vlan-8021q",
+    "type": "fiche",
+    "domaine": "reseau",
+    "sousTheme": "routage-commutation",
+    "titre": "VLAN et trunking 802.1Q",
+    "resume": "Segmentation de niveau 2, ports access et trunk, VLAN natif et attaque par double tagging.",
+    "difficulte": "intermediaire",
+    "corps": {
+      "definition": "Un VLAN découpe un switch physique en plusieurs réseaux logiques isolés au niveau 2 : chaque VLAN est un domaine de broadcast distinct. Un port access appartient à un seul VLAN ; un port trunk transporte plusieurs VLAN en ajoutant une étiquette 802.1Q (4 octets, VLAN ID sur 12 bits) aux trames.",
+      "schema": "[PC VLAN 10]─access─┐\n                    [SW1]══trunk 802.1Q (10,20)══[SW2]──access─[Serveur VLAN 20]\n[PC VLAN 20]─access─┘\nPassage de VLAN 10 à 20 : uniquement via un routeur ou un switch L3",
+      "casUsage": "Séparer postes utilisateurs, serveurs, téléphonie et invités sur la même infrastructure, puis filtrer les flux entre VLAN sur le pare-feu.",
+      "piege": "Laisser le VLAN natif sur le VLAN 1 et la négociation DTP active : cela ouvre la voie au VLAN hopping (switch spoofing ou double tagging).",
+      "pointsCles": [
+        "Un VLAN = un domaine de broadcast",
+        "Port access vs port trunk",
+        "Étiquette 802.1Q, VLAN natif non étiqueté",
+        "Le routage inter-VLAN passe par la couche 3"
+      ]
+    },
+    "liens": [
+      { "cible": "vlan-hopping", "nature": "vecteur-attaque" },
+      { "cible": "zero-trust", "nature": "voir-aussi" }
+    ]
+  },
+  {
+    "id": "equipements-reseau",
+    "type": "fiche",
+    "domaine": "reseau",
+    "sousTheme": "routage-commutation",
+    "titre": "Switch, routeur et pare-feu",
+    "resume": "Trois équipements, trois couches et trois rôles : commuter, router, filtrer.",
+    "difficulte": "fondamental",
+    "corps": {
+      "definition": "Le switch relie les machines d'un même réseau local en commutant les trames selon les adresses MAC (couche 2). Le routeur relie des réseaux différents en acheminant les paquets selon les adresses IP et sa table de routage (couche 3). Le pare-feu filtre les flux selon une politique de sécurité (couches 3-4, jusqu'à 7 pour un pare-feu applicatif).",
+      "casUsage": "Une PME : un switch par étage, un routeur ou une box vers Internet, un pare-feu qui n'autorise que les flux nécessaires entre Internet, la DMZ et le LAN.",
+      "piege": "Dire qu'un routeur « protège » le réseau. Ses ACL filtrent sommairement, mais seul un pare-feu à états suit les connexions et applique une politique complète.",
+      "pointsCles": [
+        "Switch : couche 2, table MAC",
+        "Routeur : couche 3, table de routage",
+        "Pare-feu : politique de filtrage, souvent à états",
+        "Un switch L3 sait aussi router entre VLAN"
+      ]
+    },
+    "liens": [
+      { "cible": "firewall-stateful", "nature": "voir-aussi" },
+      { "cible": "osi-tcpip", "nature": "prerequis" }
+    ]
+  },
+  {
+    "id": "dns",
+    "type": "fiche",
+    "domaine": "reseau",
+    "sousTheme": "protocoles-applicatifs",
+    "titre": "DNS — résolution de bout en bout",
+    "resume": "Récursif vs itératif, types d'enregistrements (A, AAAA, MX, CNAME, TXT), cache et TTL.",
+    "difficulte": "fondamental",
+    "corps": {
+      "definition": "Le DNS traduit un nom de domaine en adresse IP. Le poste interroge un résolveur récursif, qui fait le travail à sa place en interrogeant itérativement les serveurs racine, puis ceux du TLD (.fr), puis le serveur faisant autorité pour le domaine. Chaque réponse est mise en cache pendant sa durée de vie (TTL).",
+      "schema": "Poste → cache local → résolveur récursif\n  résolveur → racine (.)        « voir .fr »\n  résolveur → TLD (.fr)         « voir ns1.exemple.fr »\n  résolveur → autorité          « www.exemple.fr A 203.0.113.10 »\n  résolveur → poste (réponse mise en cache, TTL)",
+      "casUsage": "Diagnostiquer avec dig ou nslookup ; détecter de l'exfiltration par tunnel DNS (sous-domaines très longs et nombreux) dans les journaux du résolveur.",
+      "piege": "Ne pas distinguer requête récursive (le client demande une réponse complète) et itérative (le serveur renvoie vers le suivant). Oublier que DNS est aussi un vecteur d'attaque : empoisonnement de cache, tunneling.",
+      "pointsCles": [
+        "Résolveur récursif vs serveurs faisant autorité",
+        "Hiérarchie racine → TLD → domaine",
+        "Enregistrements A, AAAA, MX, CNAME, TXT, NS",
+        "UDP 53, TCP 53 pour les grosses réponses"
+      ]
+    },
+    "liens": [
+      { "cible": "dns-spoofing", "nature": "vecteur-attaque" },
+      { "cible": "tcp-vs-udp", "nature": "prerequis" }
+    ]
+  },
+  {
+    "id": "dhcp-dora",
+    "type": "fiche",
+    "domaine": "reseau",
+    "sousTheme": "protocoles-applicatifs",
+    "titre": "DHCP et le processus DORA",
+    "resume": "Discover, Offer, Request, Acknowledge : comment un poste obtient sa configuration IP.",
+    "difficulte": "fondamental",
+    "corps": {
+      "definition": "DHCP attribue automatiquement adresse IP, masque, passerelle et serveurs DNS. L'échange suit quatre messages : Discover (le client cherche un serveur en broadcast), Offer (le serveur propose un bail), Request (le client accepte), Acknowledge (le serveur confirme).",
+      "schema": "Client ── DISCOVER (broadcast) ──→\n       ←── OFFER ── Serveur DHCP\nClient ── REQUEST ──→\n       ←── ACK (bail : IP, masque, passerelle, DNS, durée)",
+      "casUsage": "Un poste en 169.254.x.x n'a pas obtenu de réponse DHCP (adresse APIPA) : vérifier le VLAN, le relais DHCP (ip helper) ou l'étendue épuisée.",
+      "piege": "Oublier qu'un serveur DHCP pirate peut distribuer une fausse passerelle et un faux DNS pour intercepter le trafic. Contre-mesure : DHCP snooping sur les switchs.",
+      "pointsCles": [
+        "Discover, Offer, Request, Acknowledge",
+        "UDP 67 (serveur) et 68 (client)",
+        "Relais DHCP pour traverser les sous-réseaux",
+        "DHCP snooping contre les serveurs pirates"
+      ]
+    },
+    "liens": [{ "cible": "arp-spoofing", "nature": "voir-aussi" }]
+  },
+  {
+    "id": "firewall-stateful",
+    "type": "fiche",
+    "domaine": "reseau",
+    "sousTheme": "securite-reseau",
+    "titre": "Pare-feu stateful vs stateless et ACL",
+    "resume": "Filtrer paquet par paquet ou suivre l'état des connexions : différences et usages.",
+    "difficulte": "intermediaire",
+    "corps": {
+      "definition": "Un filtrage stateless (ACL) examine chaque paquet isolément selon IP, port et protocole. Un pare-feu stateful tient une table des connexions établies et autorise automatiquement le trafic retour d'une session légitime. Les pare-feu nouvelle génération ajoutent l'inspection applicative, l'identification des utilisateurs et la prévention d'intrusion.",
+      "casUsage": "Autoriser les postes à naviguer en HTTPS sans ouvrir explicitement les ports éphémères de retour : c'est la table d'états qui s'en charge.",
+      "piege": "Placer une règle large (any/any) au-dessus de règles précises : l'ordre des règles compte, la première correspondance s'applique. Oublier la règle finale de refus par défaut.",
+      "pointsCles": [
+        "Stateless : paquet par paquet",
+        "Stateful : table de sessions",
+        "Ordre des règles et refus par défaut",
+        "Moindre privilège sur les flux"
+      ]
+    },
+    "liens": [
+      { "cible": "zero-trust", "nature": "voir-aussi" },
+      { "cible": "equipements-reseau", "nature": "prerequis" }
+    ]
+  },
+  {
+    "id": "vpn-ipsec-tls",
+    "type": "fiche",
+    "domaine": "reseau",
+    "sousTheme": "securite-reseau",
+    "titre": "VPN — IPsec vs SSL/TLS",
+    "resume": "Tunnels site à site et accès distant, IKE, modes transport et tunnel, surface d'attaque des passerelles.",
+    "difficulte": "intermediaire",
+    "corps": {
+      "definition": "Un VPN crée un tunnel chiffré entre deux points. IPsec opère en couche 3, négocie ses clés avec IKE et protège les paquets avec ESP ; il sert surtout aux liaisons site à site. Les VPN SSL/TLS opèrent au-dessus de TCP/UDP, traversent facilement les pare-feu et servent à l'accès distant des utilisateurs.",
+      "schema": "Site à site : [LAN A]─[passerelle]══IPsec/ESP══[passerelle]─[LAN B]\nAccès distant : [portable]══TLS══[passerelle VPN]─[SI interne]",
+      "casUsage": "Télétravail : le portable se connecte à la passerelle VPN SSL de l'entreprise avec authentification multifacteur, puis n'accède qu'aux applications autorisées.",
+      "piege": "Considérer la passerelle VPN comme une zone de confiance. Exposée sur Internet, elle est une cible prioritaire : des vulnérabilités de pré-authentification y sont régulièrement exploitées pour un accès initial.",
+      "pointsCles": [
+        "IPsec : couche 3, IKE, ESP, site à site",
+        "VPN TLS : accès distant, traverse les pare-feu",
+        "MFA indispensable sur l'accès distant",
+        "Passerelle = surface d'attaque à patcher en priorité"
+      ]
+    },
+    "liens": [
+      { "cible": "zero-trust", "nature": "voir-aussi" },
+      { "cible": "ransomware-cycle", "nature": "vecteur-attaque" }
+    ]
+  },
+  {
+    "id": "zero-trust",
+    "type": "fiche",
+    "domaine": "reseau",
+    "sousTheme": "securite-reseau",
+    "titre": "Segmentation réseau et zero trust",
+    "resume": "Ne jamais faire confiance par défaut : vérifier chaque accès, segmenter, limiter le mouvement latéral.",
+    "difficulte": "intermediaire",
+    "corps": {
+      "definition": "Le modèle zero trust abandonne l'idée d'un réseau interne de confiance. Chaque accès est authentifié, autorisé selon l'identité, l'état du poste et le contexte, puis limité au strict nécessaire. La segmentation (VLAN, micro-segmentation, filtrage entre zones) en est la traduction réseau.",
+      "casUsage": "Un poste compromis dans le VLAN comptabilité ne doit pas pouvoir joindre les contrôleurs de domaine en RDP ni les sauvegardes : la segmentation coupe le mouvement latéral d'un ransomware.",
+      "piege": "Présenter le zero trust comme un produit à acheter. C'est une démarche : identité forte, moindre privilège, segmentation et surveillance continue.",
+      "pointsCles": [
+        "Ne jamais faire confiance, toujours vérifier",
+        "Moindre privilège et accès par application",
+        "Segmentation contre le mouvement latéral",
+        "Identité et état du poste au cœur des décisions"
+      ]
+    },
+    "liens": [{ "cible": "mouvement-lateral", "nature": "voir-aussi" }]
+  },
+  {
+    "id": "wireshark",
+    "type": "outil",
+    "domaine": "reseau",
+    "sousTheme": "outils",
+    "titre": "Wireshark",
+    "resume": "Analyseur de trames : capture, filtres d'affichage, suivi de flux TCP.",
+    "difficulte": "intermediaire",
+    "corps": {
+      "categorie": "Analyse de trafic",
+      "role": "Capturer et décoder le trafic réseau protocole par protocole pour diagnostiquer une panne ou analyser un comportement suspect.",
+      "exemple": "Filtre « tcp.flags.syn == 1 && tcp.flags.ack == 0 » pour repérer un scan SYN ; « dns.qry.name contains \"exemple\" » pour suivre des requêtes DNS.",
+      "alternatives": ["tcpdump", "tshark", "Zeek"]
+    },
+    "liens": [{ "cible": "tcp-handshake", "nature": "voir-aussi" }]
+  },
+  {
+    "id": "q-url-navigateur",
+    "type": "question",
+    "domaine": "reseau",
+    "sousTheme": "protocoles-applicatifs",
+    "titre": "Que se passe-t-il quand je tape une URL dans mon navigateur ?",
+    "resume": "La question classique qui parcourt DNS, TCP, TLS, HTTP et le rendu.",
+    "difficulte": "intermediaire",
+    "corps": {
+      "reference": [
+        { "titre": "DNS", "detail": "Recherche dans les caches (navigateur, système), puis résolution récursive via le résolveur configuré." },
+        { "titre": "TCP", "detail": "Three-way handshake (SYN, SYN-ACK, ACK) vers le port 443 du serveur." },
+        { "titre": "TLS", "detail": "Négociation TLS : le serveur présente son certificat, le navigateur vérifie la chaîne de confiance, les clés de session sont établies." },
+        { "titre": "HTTP", "detail": "Requête GET avec ses en-têtes, réponse avec un code de statut (200, 301, 404…) et le contenu." },
+        { "titre": "Rendu", "detail": "Analyse du HTML, construction du DOM, chargement des CSS, JS et images, affichage." }
+      ],
+      "pointsCles": [
+        { "libelle": "Résolution DNS du nom de domaine", "motsCles": ["dns", "resolution", "resolveur"] },
+        { "libelle": "Connexion TCP (three-way handshake)", "motsCles": ["tcp", "handshake", "syn"] },
+        { "libelle": "Négociation TLS et vérification du certificat", "motsCles": ["tls", "ssl", "certificat", "https"] },
+        { "libelle": "Requête HTTP et réponse du serveur", "motsCles": ["http", "get", "requete"] },
+        { "libelle": "Caches DNS (navigateur, OS, résolveur)", "motsCles": ["cache"], "secondaire": true },
+        { "libelle": "Rendu de la page (DOM, CSS, JS)", "motsCles": ["dom", "rendu", "affiche", "html", "css"], "secondaire": true }
+      ],
+      "piege": "Oublier TLS ou le confondre avec du chiffrement « au niveau HTTP ». Le recruteur enchaîne souvent : « et si le certificat est invalide ? »",
+      "relances": [
+        "Et si le certificat est expiré ou auto-signé ?",
+        "Où un attaquant pourrait-il s'interposer dans cette chaîne ?"
+      ]
+    },
+    "liens": [
+      { "cible": "dns", "nature": "prerequis" },
+      { "cible": "tcp-handshake", "nature": "prerequis" }
+    ]
+  },
+  {
+    "id": "q-tcp-udp",
+    "type": "question",
+    "domaine": "reseau",
+    "sousTheme": "transport",
+    "titre": "Explique la différence entre TCP et UDP, avec un exemple d'usage de chacun.",
+    "resume": "Fiabilité contre légèreté, illustrées par des protocoles concrets.",
+    "difficulte": "fondamental",
+    "corps": {
+      "reference": [
+        { "titre": "TCP", "detail": "Orienté connexion : handshake, accusés de réception, retransmission, ordre garanti, contrôle de flux." },
+        { "titre": "UDP", "detail": "Sans connexion : datagrammes indépendants, pas de garantie de livraison ni d'ordre, très faible surcoût." },
+        { "titre": "Exemples", "detail": "TCP pour le web (HTTPS), SSH ou l'e-mail ; UDP pour DNS, la VoIP, le streaming ou les jeux." }
+      ],
+      "pointsCles": [
+        { "libelle": "TCP est orienté connexion et fiable", "motsCles": ["connexion", "fiable", "fiabilite", "accuse", "ack"] },
+        { "libelle": "UDP est sans connexion et sans garantie", "motsCles": ["sans connexion", "pas de garantie", "non fiable", "aucune garantie", "pas fiable"] },
+        { "libelle": "Exemple d'usage TCP", "motsCles": ["http", "https", "ssh", "smtp", "ftp", "web"] },
+        { "libelle": "Exemple d'usage UDP", "motsCles": ["dns", "voip", "streaming", "jeu", "jeux", "video", "dhcp"] },
+        { "libelle": "Retransmission et ordre des segments", "motsCles": ["retransm", "ordre", "sequence"], "secondaire": true }
+      ],
+      "piege": "Dire qu'UDP est « non sécurisé » : il est non fiable, ce qui est différent. Bonus apprécié : DNS bascule en TCP pour les grosses réponses.",
+      "relances": ["Pourquoi la VoIP préfère-t-elle perdre un paquet plutôt que l'attendre ?"]
+    },
+    "liens": [{ "cible": "tcp-vs-udp", "nature": "prerequis" }]
+  },
+  {
+    "id": "q-three-way-handshake",
+    "type": "question",
+    "domaine": "reseau",
+    "sousTheme": "transport",
+    "titre": "Comment fonctionne le three-way handshake TCP ?",
+    "resume": "SYN, SYN-ACK, ACK ; numéros de séquence ; lien avec le SYN flood.",
+    "difficulte": "fondamental",
+    "corps": {
+      "reference": [
+        { "titre": "SYN", "detail": "Le client demande l'ouverture et annonce son numéro de séquence initial." },
+        { "titre": "SYN-ACK", "detail": "Le serveur accepte, annonce son propre numéro de séquence et acquitte celui du client." },
+        { "titre": "ACK", "detail": "Le client acquitte ; la connexion est établie dans les deux sens." },
+        { "titre": "Sécurité", "detail": "Le SYN flood sature les connexions semi-ouvertes ; les SYN cookies et la limitation de débit protègent." }
+      ],
+      "pointsCles": [
+        { "libelle": "Le client envoie SYN", "motsCles": ["syn"] },
+        { "libelle": "Le serveur répond SYN-ACK", "motsCles": ["syn-ack", "syn ack", "synack"] },
+        { "libelle": "Le client confirme par ACK", "motsCles": ["ack"] },
+        { "libelle": "Synchronisation des numéros de séquence", "motsCles": ["sequence", "seq"] },
+        { "libelle": "Lien avec le SYN flood", "motsCles": ["syn flood", "flood", "syn cookie"], "secondaire": true }
+      ],
+      "piege": "Réciter les trois étapes sans expliquer leur but : synchroniser les numéros de séquence dans les deux sens.",
+      "relances": ["Comment un scan SYN de Nmap exploite-t-il ce mécanisme ?"]
+    },
+    "liens": [{ "cible": "tcp-handshake", "nature": "prerequis" }]
+  },
+  {
+    "id": "q-ip-privee-nat",
+    "type": "question",
+    "domaine": "reseau",
+    "sousTheme": "adressage",
+    "titre": "Qu'est-ce qu'une adresse IP privée vs publique, et comment fonctionne le NAT ?",
+    "resume": "Plages RFC 1918, routage Internet et traduction d'adresses.",
+    "difficulte": "fondamental",
+    "corps": {
+      "reference": [
+        { "titre": "Privée", "detail": "Plages RFC 1918 (10/8, 172.16/12, 192.168/16), utilisables librement en interne, non routées sur Internet." },
+        { "titre": "Publique", "detail": "Unique sur Internet, attribuée par un fournisseur, routable." },
+        { "titre": "NAT/PAT", "detail": "Le routeur réécrit l'adresse source privée en adresse publique et mémorise la correspondance (avec le port en PAT) pour renvoyer les réponses." }
+      ],
+      "pointsCles": [
+        { "libelle": "Plages privées RFC 1918", "motsCles": ["192.168", "10.0", "172.16", "rfc 1918", "rfc1918"] },
+        { "libelle": "Les IP privées ne sont pas routées sur Internet", "motsCles": ["pas routable", "non routable", "pas routee", "non routee", "routable"] },
+        { "libelle": "Le NAT traduit l'adresse privée en publique", "motsCles": ["tradu", "remplace", "reecrit", "translation"] },
+        { "libelle": "PAT : partage d'une IP grâce aux ports", "motsCles": ["port", "pat", "overload"] },
+        { "libelle": "Table de traduction", "motsCles": ["table", "correspondance"], "secondaire": true }
+      ],
+      "piege": "Présenter le NAT comme une protection : il complique l'accès entrant mais ne remplace pas un pare-feu.",
+      "relances": ["Pourquoi IPv6 se passe-t-il de NAT ?"]
+    },
+    "liens": [{ "cible": "nat-pat", "nature": "prerequis" }]
+  },
+  {
+    "id": "q-switch-routeur-firewall",
+    "type": "question",
+    "domaine": "reseau",
+    "sousTheme": "routage-commutation",
+    "titre": "Différencie un switch, un routeur et un firewall.",
+    "resume": "Trois équipements, trois couches, trois rôles.",
+    "difficulte": "fondamental",
+    "corps": {
+      "reference": [
+        { "titre": "Switch", "detail": "Couche 2 : commute les trames dans un réseau local selon la table des adresses MAC." },
+        { "titre": "Routeur", "detail": "Couche 3 : relie des réseaux différents et achemine les paquets selon les adresses IP et sa table de routage." },
+        { "titre": "Firewall", "detail": "Applique une politique de sécurité : autorise ou bloque les flux, souvent en suivant l'état des connexions." }
+      ],
+      "pointsCles": [
+        { "libelle": "Switch : couche 2, adresses MAC", "motsCles": ["mac", "couche 2", "niveau 2"] },
+        { "libelle": "Routeur : couche 3, adresses IP, entre réseaux", "motsCles": ["couche 3", "niveau 3", "routage", "entre reseaux", "reseaux differents"] },
+        { "libelle": "Firewall : filtrage selon une politique", "motsCles": ["filtr", "bloque", "autorise", "regle", "politique"] },
+        { "libelle": "Pare-feu à états (stateful)", "motsCles": ["stateful", "etat", "session"], "secondaire": true }
+      ],
+      "piege": "Dire qu'un routeur protège le réseau : ses ACL filtrent sommairement, seul un pare-feu applique une vraie politique de sécurité.",
+      "relances": ["Qu'apporte un switch de niveau 3 ?"]
+    },
+    "liens": [{ "cible": "equipements-reseau", "nature": "prerequis" }]
+  },
+  {
+    "id": "q-vlan-segmentation",
+    "type": "question",
+    "domaine": "reseau",
+    "sousTheme": "routage-commutation",
+    "titre": "Qu'est-ce qu'un VLAN et pourquoi segmenter un réseau ?",
+    "resume": "Isolation de niveau 2, domaines de broadcast et réduction du mouvement latéral.",
+    "difficulte": "intermediaire",
+    "corps": {
+      "reference": [
+        { "titre": "Définition", "detail": "Un VLAN est un réseau logique isolé au niveau 2 sur une infrastructure physique partagée ; chaque VLAN est un domaine de broadcast." },
+        { "titre": "Trunk", "detail": "Les liens trunk transportent plusieurs VLAN grâce à l'étiquette 802.1Q." },
+        { "titre": "Pourquoi", "detail": "Limiter les broadcasts, organiser par usage et surtout contenir une compromission : les flux entre VLAN passent par un équipement de filtrage." }
+      ],
+      "pointsCles": [
+        { "libelle": "Réseau logique isolé au niveau 2", "motsCles": ["logique", "niveau 2", "couche 2", "isol"] },
+        { "libelle": "Domaine de broadcast distinct", "motsCles": ["broadcast", "diffusion"] },
+        { "libelle": "Trunk et étiquette 802.1Q", "motsCles": ["802.1q", "trunk", "tag", "etiquet"] },
+        { "libelle": "Sécurité : limiter le mouvement latéral, filtrer entre zones", "motsCles": ["securite", "lateral", "filtr", "compromission", "cloisonn"] }
+      ],
+      "piege": "Croire que le VLAN suffit à sécuriser : sans filtrage entre VLAN et avec un VLAN natif mal configuré, l'isolation peut être contournée (VLAN hopping).",
+      "relances": ["Comment un attaquant pourrait-il sauter d'un VLAN à l'autre ?"]
+    },
+    "liens": [{ "cible": "vlan-8021q", "nature": "prerequis" }]
+  },
+  {
+    "id": "q-dns-bout-en-bout",
+    "type": "question",
+    "domaine": "reseau",
+    "sousTheme": "protocoles-applicatifs",
+    "titre": "Explique le fonctionnement d'une requête DNS de bout en bout.",
+    "resume": "Du cache local au serveur faisant autorité, en passant par la racine et le TLD.",
+    "difficulte": "intermediaire",
+    "corps": {
+      "reference": [
+        { "titre": "Cache", "detail": "Le poste vérifie son cache et le fichier hosts, puis interroge son résolveur." },
+        { "titre": "Récursion", "detail": "Le résolveur récursif interroge la racine, qui le renvoie vers le TLD, qui le renvoie vers le serveur faisant autorité." },
+        { "titre": "Réponse", "detail": "Le serveur faisant autorité renvoie l'enregistrement (A, AAAA…) ; le résolveur le met en cache selon le TTL et répond au poste." }
+      ],
+      "pointsCles": [
+        { "libelle": "Cache local et résolveur", "motsCles": ["cache", "resolveur"] },
+        { "libelle": "Serveurs racine", "motsCles": ["racine", "root"] },
+        { "libelle": "Serveur du TLD", "motsCles": ["tld", "extension", "premier niveau"] },
+        { "libelle": "Serveur faisant autorité", "motsCles": ["autorit", "authoritative"] },
+        { "libelle": "Récursif vs itératif", "motsCles": ["recursi", "iterati"], "secondaire": true },
+        { "libelle": "TTL et mise en cache", "motsCles": ["ttl", "duree de vie"], "secondaire": true }
+      ],
+      "piege": "Oublier le résolveur récursif ou confondre récursif et itératif. Penser à citer les risques : empoisonnement de cache, tunneling DNS.",
+      "relances": ["Comment protéger un résolveur contre l'empoisonnement de cache ?"]
+    },
+    "liens": [
+      { "cible": "dns", "nature": "prerequis" },
+      { "cible": "dns-spoofing", "nature": "voir-aussi" }
+    ]
+  },
+  {
+    "id": "q-arp-spoofing",
+    "type": "question",
+    "domaine": "reseau",
+    "sousTheme": "securite-reseau",
+    "titre": "Qu'est-ce qu'une attaque ARP spoofing / Man-in-the-Middle, et comment s'en protéger ?",
+    "resume": "Empoisonnement de cache ARP, interception et contre-mesures sur les switchs.",
+    "difficulte": "intermediaire",
+    "corps": {
+      "reference": [
+        { "titre": "ARP", "detail": "ARP associe une adresse IP à une adresse MAC dans un réseau local, sans aucune authentification." },
+        { "titre": "Attaque", "detail": "L'attaquant envoie de fausses réponses ARP pour se faire passer pour la passerelle : le trafic des victimes transite par lui (Man-in-the-Middle)." },
+        { "titre": "Protection", "detail": "Dynamic ARP Inspection et DHCP snooping sur les switchs, segmentation, chiffrement de bout en bout (TLS) et détection des anomalies ARP." }
+      ],
+      "pointsCles": [
+        { "libelle": "ARP associe IP et MAC", "motsCles": ["mac"] },
+        { "libelle": "Fausses réponses ARP / empoisonnement de cache", "motsCles": ["fausse", "empoisonn", "poison", "usurp", "falsifi"] },
+        { "libelle": "Interception du trafic (Man-in-the-Middle)", "motsCles": ["intercept", "man in the middle", "mitm", "milieu"] },
+        { "libelle": "Dynamic ARP Inspection / DHCP snooping", "motsCles": ["dai", "arp inspection", "dhcp snooping", "inspection"] },
+        { "libelle": "Chiffrement de bout en bout", "motsCles": ["chiffr", "tls", "https", "vpn"], "secondaire": true }
+      ],
+      "piege": "Proposer des entrées ARP statiques partout : peu réaliste à grande échelle. La réponse attendue porte sur les protections des switchs et le chiffrement.",
+      "relances": ["Pourquoi HTTPS limite-t-il l'impact d'un Man-in-the-Middle ?"]
+    },
+    "liens": [{ "cible": "arp-spoofing", "nature": "prerequis" }]
+  }
+]

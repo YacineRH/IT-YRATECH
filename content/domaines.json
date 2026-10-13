@@ -1,0 +1,128 @@
+[
+  {
+    "slug": "reseau",
+    "nom": "Réseaux et protocoles",
+    "nomCourt": "Réseau",
+    "description": "Modèles OSI et TCP/IP, adressage et subnetting, routage et commutation, protocoles applicatifs, sécurité réseau et zero trust.",
+    "couleur": "#22D3EE",
+    "ordre": 1,
+    "sousThemes": [
+      { "slug": "modeles", "nom": "Modèles et couches" },
+      { "slug": "transport", "nom": "Transport (TCP/UDP)" },
+      { "slug": "adressage", "nom": "Adressage IP" },
+      { "slug": "routage-commutation", "nom": "Routage et commutation" },
+      { "slug": "protocoles-applicatifs", "nom": "Protocoles applicatifs" },
+      { "slug": "securite-reseau", "nom": "Sécurité réseau" },
+      { "slug": "outils", "nom": "Outils" }
+    ]
+  },
+  {
+    "slug": "soc",
+    "nom": "SOC — détection, outils, risques",
+    "nomCourt": "SOC",
+    "description": "Organisation d'un SOC, cycle de vie d'une alerte, SIEM, EDR/XDR, threat intelligence, règles de détection et menaces.",
+    "couleur": "#60A5FA",
+    "ordre": 2,
+    "sousThemes": [
+      { "slug": "organisation", "nom": "Organisation du SOC" },
+      { "slug": "outils", "nom": "Outils de détection" },
+      { "slug": "detection", "nom": "Règles de détection" },
+      { "slug": "menaces", "nom": "Risques et menaces" }
+    ]
+  },
+  {
+    "slug": "grc",
+    "nom": "GRC — cadre légal, normes, méthodologies",
+    "nomCourt": "GRC",
+    "description": "RGPD, NIS2, DORA, LPM, ISO 27001/27002, EBIOS RM, qualifications ANSSI et gouvernance de la sécurité.",
+    "couleur": "#34D399",
+    "ordre": 3,
+    "sousThemes": [
+      { "slug": "reglementation", "nom": "Réglementations et lois" },
+      { "slug": "normes", "nom": "Normes et référentiels" },
+      { "slug": "gouvernance", "nom": "Gouvernance" }
+    ]
+  },
+  {
+    "slug": "pentest",
+    "nom": "Pentest, Red Team et ingénierie sociale",
+    "nomCourt": "Pentest",
+    "description": "Méthodologie de test d'intrusion, outils par phase, ingénierie sociale, Red Team et bug bounty.",
+    "couleur": "#FF6B4A",
+    "ordre": 4,
+    "sousThemes": [
+      { "slug": "methodologie", "nom": "Méthodologie" },
+      { "slug": "outils", "nom": "Outils offensifs" },
+      { "slug": "ingenierie-sociale", "nom": "Ingénierie sociale" },
+      { "slug": "attaques-reseau", "nom": "Attaques réseau" },
+      { "slug": "red-team", "nom": "Red Team" }
+    ]
+  },
+  {
+    "slug": "ia",
+    "nom": "Cybersécurité et IA",
+    "nomCourt": "Cyber & IA",
+    "description": "Risques de l'IA générative, prompt injection, deepfakes, IA locale et usage de l'IA pour monter en compétence.",
+    "couleur": "#B794F6",
+    "ordre": 5,
+    "sousThemes": [
+      { "slug": "risques", "nom": "Risques de l'IA générative" },
+      { "slug": "ia-locale", "nom": "IA locale" },
+      { "slug": "methode", "nom": "Apprendre avec l'IA" }
+    ]
+  },
+  {
+    "slug": "metiers",
+    "nom": "Métiers et rôles cyber",
+    "nomCourt": "Métiers",
+    "description": "DPO, RSSI, pilote PSSI, analyste SOC, pentester, administrateur sécurité : missions et compétences attendues.",
+    "couleur": "#F0A8D0",
+    "ordre": 6,
+    "sousThemes": [
+      { "slug": "roles", "nom": "Rôles" },
+      { "slug": "prerequis", "nom": "Prérequis débutant" }
+    ]
+  },
+  {
+    "slug": "admin-sys",
+    "nom": "Administration système et continuité d'activité",
+    "nomCourt": "Admin sys",
+    "description": "Linux et Windows, patch management, PCA/PRA, RTO/RPO, haute disponibilité et réponse à incident.",
+    "couleur": "#A3B1C6",
+    "ordre": 7,
+    "sousThemes": [
+      { "slug": "systemes", "nom": "Maîtrise des systèmes" },
+      { "slug": "continuite", "nom": "PCA / PRA" },
+      { "slug": "haute-disponibilite", "nom": "Haute disponibilité" },
+      { "slug": "reponse-incident", "nom": "Réponse à incident" }
+    ]
+  },
+  {
+    "slug": "web-cloud",
+    "nom": "Architecture web, API, PKI et cloud",
+    "nomCourt": "Web & cloud",
+    "description": "Proxy et reverse proxy, API et leurs risques, PKI et certificats, identité cloud et responsabilité partagée.",
+    "couleur": "#818CF8",
+    "ordre": 8,
+    "sousThemes": [
+      { "slug": "proxy", "nom": "Proxy et reverse proxy" },
+      { "slug": "api", "nom": "API" },
+      { "slug": "pki", "nom": "PKI et certificats" },
+      { "slug": "cloud", "nom": "Cloud et identité" }
+    ]
+  },
+  {
+    "slug": "crypto",
+    "nom": "Sécurité by design, cryptographie, reverse, ransomware",
+    "nomCourt": "Crypto & ransomware",
+    "description": "Principes de sécurité dès la conception, chiffrement et hachage, reverse engineering et cycle d'un ransomware.",
+    "couleur": "#D9B26F",
+    "ordre": 9,
+    "sousThemes": [
+      { "slug": "security-by-design", "nom": "Security by design" },
+      { "slug": "cryptographie", "nom": "Cryptographie" },
+      { "slug": "reverse", "nom": "Reverse engineering" },
+      { "slug": "ransomware", "nom": "Ransomware" }
+    ]
+  }
+]

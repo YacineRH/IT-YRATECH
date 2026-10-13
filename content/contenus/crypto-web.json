@@ -1,0 +1,71 @@
+[
+  {
+    "id": "ransomware-cycle",
+    "type": "fiche",
+    "domaine": "crypto",
+    "sousTheme": "ransomware",
+    "titre": "Cycle d'une attaque par ransomware",
+    "resume": "Accès initial, propagation, exfiltration, chiffrement, demande de rançon — et comment réagir.",
+    "difficulte": "intermediaire",
+    "corps": {
+      "definition": "Une attaque par rançongiciel suit généralement un cycle : accès initial (phishing, RDP ou VPN exposé et vulnérable), propagation latérale et élévation de privilèges, exfiltration des données (double extorsion), destruction des sauvegardes accessibles, chiffrement des systèmes, puis demande de rançon.",
+      "schema": "accès initial → mouvement latéral → exfiltration → suppression des sauvegardes → chiffrement → rançon",
+      "casUsage": "Réponse : isoler les systèmes touchés sans les éteindre précipitamment, activer la cellule de crise, préserver les traces, notifier (ANSSI/CERT-FR, CNIL si données personnelles, dépôt de plainte), restaurer depuis des sauvegardes saines et vérifiées.",
+      "piege": "Payer par défaut : rien ne garantit la restitution des données ni la non-publication, et le paiement finance les attaquants. Les autorités recommandent de ne pas payer.",
+      "pointsCles": [
+        "Double extorsion : exfiltration avant chiffrement",
+        "Sauvegardes hors ligne ou immuables",
+        "Segmentation, EDR, MFA sur les accès distants",
+        "Isoler, notifier, restaurer — ne pas payer par défaut"
+      ]
+    },
+    "liens": [
+      { "cible": "mouvement-lateral", "nature": "voir-aussi" },
+      { "cible": "violation-donnees", "nature": "voir-aussi" }
+    ]
+  },
+  {
+    "id": "chiffrement-hachage",
+    "type": "fiche",
+    "domaine": "crypto",
+    "sousTheme": "cryptographie",
+    "titre": "Chiffrement, hachage et encodage",
+    "resume": "Trois transformations souvent confondues en entretien : réversibilité, clé et usage.",
+    "difficulte": "fondamental",
+    "corps": {
+      "definition": "Le chiffrement est réversible avec une clé : symétrique (AES, même clé) ou asymétrique (RSA, ECC, paire de clés). Le hachage est à sens unique et produit une empreinte de taille fixe (SHA-256) pour vérifier l'intégrité ou stocker des mots de passe avec un sel et un algorithme lent. L'encodage (Base64) change seulement la représentation, sans aucun secret.",
+      "schema": "Chiffrement  clair ⇄ chiffré      (clé requise)\nHachage      donnée → empreinte   (irréversible)\nEncodage     donnée ⇄ Base64      (aucun secret)",
+      "casUsage": "Mots de passe : jamais chiffrés ni hachés en SHA-256 simple, mais hachés avec un algorithme dédié et lent (bcrypt, scrypt, Argon2) et un sel unique.",
+      "piege": "Dire qu'un mot de passe est « encodé en Base64 » pour le protéger, ou citer MD5 et SHA-1, cassés pour la résistance aux collisions.",
+      "pointsCles": [
+        "Chiffrement réversible avec une clé",
+        "Hachage irréversible, empreinte fixe",
+        "Encodage sans secret",
+        "Mots de passe : algorithme lent et sel"
+      ]
+    },
+    "liens": [{ "cible": "pki-chaine", "nature": "voir-aussi" }]
+  },
+  {
+    "id": "pki-chaine",
+    "type": "fiche",
+    "domaine": "web-cloud",
+    "sousTheme": "pki",
+    "titre": "PKI et chaîne de certificats",
+    "resume": "AC racine hors ligne, AC intermédiaire, certificats X.509 et révocation.",
+    "difficulte": "intermediaire",
+    "corps": {
+      "definition": "Une PKI organise la confiance par une hiérarchie : l'autorité de certification racine, dont la clé est la plus sensible et généralement conservée hors ligne, signe des AC intermédiaires, qui signent au quotidien les certificats X.509 des serveurs et utilisateurs. Un client fait confiance à un certificat s'il peut remonter la chaîne jusqu'à une racine de son magasin de confiance.",
+      "schema": "AC racine (hors ligne, magasin de confiance)\n  └─ AC intermédiaire (signe au quotidien)\n       └─ certificat serveur www.exemple.fr\nRévocation : CRL ou OCSP",
+      "casUsage": "Si une AC intermédiaire est compromise, on la révoque et on en émet une nouvelle depuis la racine, sans avoir à redéployer la racine sur tous les postes.",
+      "piege": "Oublier d'envoyer le certificat intermédiaire avec le certificat serveur : certains clients ne peuvent alors pas construire la chaîne et rejettent la connexion.",
+      "pointsCles": [
+        "Racine hors ligne, intermédiaire en ligne",
+        "Chaîne de confiance jusqu'au magasin du client",
+        "Certificats X.509",
+        "Révocation par CRL ou OCSP"
+      ]
+    },
+    "liens": [{ "cible": "vpn-ipsec-tls", "nature": "voir-aussi" }]
+  }
+]

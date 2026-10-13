@@ -38,6 +38,15 @@ describe('evaluerReponse', () => {
     expect(r.score).toBe(5);
   });
 
+  it('exige le mot entier pour un sigle court', () => {
+    const pts: PointCle[] = [
+      { libelle: 'MAC', motsCles: ['mac'] },
+      { libelle: 'x', motsCles: ['zz'] },
+    ];
+    expect(evaluerReponse('la machine envoie', pts).couverts).toEqual([]);
+    expect(evaluerReponse("l'adresse MAC du poste", pts).couverts).toEqual(['MAC']);
+  });
+
   it("n'accepte pas un mot-cle au milieu d'un mot", () => {
     const r = evaluerReponse('atlas', [{ libelle: 'TLS', motsCles: ['tls'] }, { libelle: 'x', motsCles: ['zz'] }]);
     expect(r.couverts).toEqual([]);
